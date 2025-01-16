@@ -12,7 +12,6 @@ class MovieLibrary:
             super().__init__(self.message)
 
     def __init__(self, json_file):
-
         """
         Initialize the MovieLibrary instance.
         :param json_file: Absolute path to the movies.json file.
@@ -56,39 +55,34 @@ class MovieLibrary:
             'genres': genres
         }
         self.movies.append(new_movie)
-        try:
-            self._save_to_file()
-            print(f"Movie '{title}' added successfully.")
-            return True
-        finally:
-            return False
+        self._save_to_file()
+        return new_movie
 
     def remove_movie(self, title):
         """
-        Remove a movie from the collection.
+        Remove a movie from the collection by title.
         :param title: Title of the movie to be removed.
+        :return: Removed movie if successful.
         """
         for movie in self.movies:
-            if movie['title'] == title:
+            if movie['title'].lower() == title.lower():
                 self.movies.remove(movie)
                 self._save_to_file()
                 print(f"Movie '{title}' removed successfully.")
-                return True
-            else:
-                print(f"Movie '{title}' not removed.")
-                return False
+                return movie
         raise self.MovieNotFoundError()
 
     def update_movie(self, title, director=None, year=None, genres=None):
         """
-        Update an existing movie in the collection.
+        Update an existing movie's details.
         :param title: Title of the movie to be updated.
-        :param director: New director of the movie.
-        :param year: New year of the movie.
-        :param genres: New list of genres for the movie.
+        :param director: New director (optional).
+        :param year: New year (optional).
+        :param genres: New genres (optional).
+        :return: Updated movie dictionary.
         """
         for movie in self.movies:
-            if movie['title'] == title:
+            if movie['title'].lower() == title.lower():
                 if director:
                     movie['director'] = director
                 if year:
@@ -102,94 +96,97 @@ class MovieLibrary:
 
     def get_movie_titles(self):
         """
-        Retrieve a list of all movie titles in the collection.
+        Retrieve a list of all movie titles.
         :return: List of all movie titles.
         """
         return [movie['title'] for movie in self.movies]
 
     def count_movies(self):
         """
-        Count the number of movies in the collection.
-        :return: Number of movies in the collection.
+        Count the total number of movies.
+        :return: Total number of movies.
         """
         return len(self.movies)
 
     def get_movie_by_title(self, title):
         """
         Retrieve a movie by its title.
-        :param title: Title of the movie to retrieve.
-        :return: Movie with the specified title.
+        :param title: Title of the movie.
+        :return: Movie dictionary if found.
         """
         for movie in self.movies:
-            if movie[title] == title:
+            if movie['title'].lower() == title.lower():
                 return movie
-        print(f"'{title}' not found in the movie list.")
+        raise self.MovieNotFoundError()
 
     def get_movies_by_title_substring(self, substring):
         """
-        Retrieve a list of movies whose title contains the specified substring.
-        :param substring: Substring to search for in movie titles.
+        Retrieve movies that contain the substring in their title.
+        :param substring: Substring to search for.
+        :return: List of matching movies.
         """
-        result = []
-        for movie in self.movies:
-            if substring in movie['title']:
-                result.append(movie)
+        result = [
+            movie for movie in self.movies
+            if substring in movie['title']
+        ]
         return result
 
     def get_movies_by_year(self, year):
         """
-        Retrieve a list of movies released in the specified year.
-        :param year: Year to search for in movie release years.
+        Retrieve movies by release year.
+        :param year: Year to filter by.
+        :return: List of movies released in the specified year.
         """
-        result = []
-        for movie in self.movies:
-            if self.year == year:
-                result.append(year)
+        result = [
+            movie for movie in self.movies
+            if movie['year'] == year
+        ]
         return result
 
     def count_movies_by_director(self, director):
         """
-        Retrieve the number of movies directed by the specified director.
-        :param director: Director to search for in movie directors.
+        Count movies by a specific director.
+        :param director: Director name to count movies for.
+        :return: Count of movies directed by the given director.
         """
-        total = 0
-        for movie in self.movies:
-            if self.director == director:
-                total += 1
+        total = sum(
+            1 for movie in self.movies
+            if movie['director'].lower() == director.lower()
+        )
         return total
 
-    def get_movie_by_genre(self, genre):
+    def get_movies_by_genre(self, genre):
         """
-        Retrieve a list of movies with the specified genre.
-        :param genre: Genre to search for in movie
+        Retrieve movies that belong to a specific genre.
+        :param genre: Genre to filter by.
+        :return: List of movies matching the genre.
         """
-        result = []
-        for movie in self.movies:
-            if genre in movie['genres']:
-                result.append(movie)
+        result = [
+            movie for movie in self.movies
+            if genre.lower() in [g.lower() for g in movie['genres']]
+        ]
         return result
 
     def get_oldest_movie_title(self):
         """
         Retrieve the title of the oldest movie in the collection.
+        :return: Title of the oldest movie.
         """
-        oldest = None
-        for movie in self.movies:
-            if not oldest or movie['year'] < oldest['year']:
-                oldest = movie
+        oldest = min(self.movies, key=lambda movie: movie['year'])
+        return oldest['title']
 
     def get_average_release_year(self):
         """
         Calculate the average release year of all movies in the collection.
+        :return: Average release year as a float.
         """
-        total = 0
-        for movie in self.movies:
-            total += movie['year']
+        total = sum(movie['year'] for movie in self.movies)
         return total / len(self.movies)
 
     def get_longest_title(self):
         """
-        Retrieve the title of the movie with the longest title.
+        Retrieve the title with the longest length.
+        :return: Longest title.
         """
         longest = None
         for movie in self.movies:
@@ -199,9 +196,10 @@ class MovieLibrary:
 
     def get_titles_between_years(self, start_year, end_year):
         """
-        Retrieve a list of movie titles released between the specified years.
-        :param start_year: Start year of the range.
-        :param end_year: End year of the range.
+        Retrieve movie titles between the specified years.
+        :param start_year: Start of the range.
+        :param end_year: End of the range.
+        :return: List of titles in the range.
         """
         result = []
         for movie in self.movies:
@@ -211,18 +209,11 @@ class MovieLibrary:
 
     def get_most_common_year(self):
         """
-        Retrieve the most common year among all movies in the collection.
+        Retrieve the most common release year among movies.
+        :return: Year that occurs most often.
         """
         years = {}
         for movie in self.movies:
-            if movie['year'] in years:
-                years[movie['year']] += 1
-            else:
-                years[movie['year']] = 1
-        most_common_year = None
-        most_common_year_count = 0
-        for year, count in years.items():
-            if count > most_common_year_count:
-                most_common_year = year
-                most_common_year_count = count
+            years[movie['year']] = years.get(movie['year'], 0) + 1
+        most_common_year = max(years, key=years.get)
         return most_common_year
