@@ -90,5 +90,23 @@
             "Adventure",
             "Drama"
         ]
+    },
+    {
+        "title": "Inception",
+        "director": "Christopher Nolan",
+        "year": 2010,
+        "genres": [
+            "Sci-Fi",
+            "Thriller"
+        ]
+    },
+    {
+        "title": "Inception",
+        "director": "Christopher Nolan",
+        "year": 2010,
+        "genres": [
+            "Sci-Fi",
+            "Thriller"
+        ]
     }
 ]
