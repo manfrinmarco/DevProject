@@ -8,8 +8,11 @@ print()
 print("Add New Movie:", library.add_movie(
 	"The Prestige", "Christopher Nolan", 2006, ["Drama", "Thriller"]))
 print()
-
-print("Removed Movie:", library.remove_movie("The Matrix"))
+try: 
+	removed_movie=library.remove_movie("The Matrix") 
+	print("Removed Movie:", removed_movie)
+except Exception as e: 
+	print("Exeption trown:", e)
 print()
 
 print("Updated Movie:", library.update_movie(
@@ -26,14 +29,13 @@ print()
 print("Movie by Title (Inception):", library.get_movie_by_title("Inception"))
 print()
 
-print("Movies by substring (cep):", 
-	  library.get_movies_by_title_substring("cep"))
+print("Movies by substring (cep):", library.get_movies_by_title_substring("cep"))
 print()
 
 print("Movies by Year (2010):", library.get_movies_by_year(2010))
 print()
 
-print("Movies by Director (Christopher Nolan):", \
+print("Movies by Director (Christopher Nolan):", 
 	  library.count_movies_by_director("Christopher Nolan"))
 print()
 
@@ -50,7 +52,7 @@ print("Longest Title:", library.get_longest_title())
 print()
 
 print("Titles between 1999 and 2014:", 
-	  library.get_titles_between_years(1999, 2014))
+	library.get_titles_between_years(1999, 2014))
 print()
 
 print("Most Common Year:", library.get_most_common_year())
